@@ -1,0 +1,12 @@
+clear;
+N = 100;
+it = 30;
+
+A = hilb(N);
+x = randn(N,1);
+b = A*x;
+
+fout = [
+
+figure;
+logy()
