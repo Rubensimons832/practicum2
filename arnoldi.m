@@ -1,36 +1,34 @@
-function e = arnoldi(A, it)
-    % ARNOLDI: Voert 'it' Arnoldi-iteraties uit op matrix A.
+
+
+function ritzwaarden = arnoldi(A,k)
+    % ARNOLDI: Voert 'k' Arnoldi-iteraties uit op matrix A.
     % Geeft de eigenwaarden (Ritz-waarden) van de Hessenbergmatrix terug.
     
-    n = size(A, 1);
+    % INITIALISATIE: k<<m (of k<m)
+    n = size(A, 1); % A € R^(nxm)
+    b = randn(n,1); % Startvector: willekeurig
+    Q = zeros(n,k); % Orthonormale basis [q1, q2, ..., qk]
+    H = zeros(k,k); % Hessenbergmatrix
     
-    % Startvector: willekeurig maar genormaliseerd
-    b = randn(n,1);
-    b = b / norm(b);
-    
-    Q = zeros(n, it);        % Orthonormale basis
-    H = zeros(it, it);       % Hessenbergmatrix
-    
-    Q(:,1) = b;
-    
-    for k = 1:it
-        v = A * Q(:,k);
-        
+    Q(:,1) = b/norm(b);                  % Algoritme 6: regel 1
+    for j = 1:k                          % Algoritme 6: regel 2
+        v = A * Q(:,j);                  % Algoritme 6: regel 3
         % Gram-Schmidt orthogonalisatie
-        for j = 1:k
-            H(j,k) = Q(:,j)' * v;
-            v = v - H(j,k) * Q(:,j);
-        end
+        for i = 1:j                      % Algoritme 6: regel 4
+            H(i,j) = Q(:,i)' * v;        % Algoritme 6: regel 5
+            v = v - H(i,j) * Q(:,i);     % Algoritme 6: regel 6
+        end                              % Algoritme 6: regel 7
         
-        if k < it
-            H(k+1,k) = norm(v);
-            if H(k+1,k) == 0
-                break; % Krylov-ruimte is opgesloten
-            end
-            Q(:,k+1) = v / H(k+1,k);
-        end
+        if j<k % Als het niet de laatste iteratie is.
+            H(j+1,j) = norm(v);          % Algoritme 6: regel 8
+            if H(j+1,j) == 0 % dan wordt Krylov-
+                break;       % deelruimte niet meer
+            end              % uitgebreid.(detail)
+            Q(:,j+1) = v / H(j+1,j);     % Algoritme 6: regel 9
+        end                              % Algoritme 6: regel 10
     end
     
     % Bereken Ritz-waarden (benaderde eigenwaarden)
-    e = eig(H(1:it,1:it));
+    % mag volgens opgave gewoon met eig().
+    ritzwaarden = eig(H(1:k,1:k));
 end
