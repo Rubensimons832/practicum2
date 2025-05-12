@@ -12,4 +12,4 @@ for i = 1 : it
 end
 
 figure;
-semilogy(1:it, fout); xlabel('iterations'); ylabel('||b - Ax_{it}||_2');
+semilogy(1:it, fout); xlabel('iterations'); ylabel('||b - Ax^{(k)}||_2');
