@@ -12,9 +12,23 @@ function c = implicitqr(A)
     else
         H = hess(A);
         while true
-            rho = H(n,n);
-            [Q1, ~] = qr(H-rho*eye(n));
-            H = Q1'*H*Q1;
+            rho = H(n,n); %verschuiving
+            H_alt = H-rho*eye(n);
+            Q = eye(n);
+            
+            %Q via householder
+            for k=1:n-1
+                x = H_alt(k:end, k);
+                e1 = zeros(length(x), 1); e1(1) = 1;
+                v = sign(x(1))*norm(x)*e1 + x;
+                v = v/norm(v);
+                Hk = eye(n);
+                Hk(k:end, k:end) = Hk(k:end, k:end)-2*(v*v');
+                H_alt = Hk*H_alt;
+                Q = Q*Hk';
+            end
+
+            H = Q'*H*Q;
             idx = find(abs(diag(H, -1)) < 1e-12);
             if ~isempty(idx)
                 i = idx(1);
